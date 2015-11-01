@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.provider.ContactsContract;
@@ -17,15 +16,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -140,7 +137,9 @@ public class HomeScreen extends AppCompatActivity {
                 param = "number=" + URLEncoder.encode(number,"UTF-8") + "&image=" + URLEncoder.encode("","UTF-8");
             }
             else {
-                param = "number=" + URLEncoder.encode(number, "UTF-8") + "&image=" + URLEncoder.encode(uri.toString(), "UTF-8");
+                InputStream iStream = getContentResolver().openInputStream(uri);
+                byte[] inputData = getBytes(iStream);
+                param = "number=" + URLEncoder.encode(number, "UTF-8") + "&image=" + Base64.encodeToString(inputData, Base64.DEFAULT);
             }
 
             conn = (HttpURLConnection)url.openConnection();
@@ -164,5 +163,18 @@ public class HomeScreen extends AppCompatActivity {
 
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private byte[] getBytes(InputStream inputStream) throws IOException {
+
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 }

@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class HomeScreen extends AppCompatActivity {
@@ -45,6 +46,7 @@ public class HomeScreen extends AppCompatActivity {
 
         lv = (ListView) findViewById(R.id.contactsInfo);
         readContacts();
+        Collections.sort(contacts);
         cla = new CustomListAdapter(this, contacts);
         lv.setAdapter(cla);
 
@@ -147,7 +149,7 @@ public class HomeScreen extends AppCompatActivity {
                 InputStream iStream = getContentResolver().openInputStream(uri);
                 byte[] inputData = getBytes(iStream);
                 String encoded = Base64.encodeToString(inputData, Base64.DEFAULT);
-                param = "number=" + URLEncoder.encode(number, "UTF-8") + "&image=" + encoded;
+                param = "number=" + URLEncoder.encode(number, "UTF-8") + "&image=" + URLEncoder.encode(encoded, "UTF-8");
             }
 
             conn = (HttpURLConnection)url.openConnection();

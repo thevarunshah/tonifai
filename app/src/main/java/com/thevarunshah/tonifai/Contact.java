@@ -2,7 +2,7 @@ package com.thevarunshah.tonifai;
 
 import android.graphics.Bitmap;
 
-public class Contact {
+public class Contact implements Comparable<Contact>{
 
     private String name;
     private String number;
@@ -31,5 +31,11 @@ public class Contact {
     public String toString(){
 
         return this.name + " - " + this.number;
+    }
+
+    @Override
+    public int compareTo(Contact c){
+
+        return this.getName().compareTo(c.getName());
     }
 }

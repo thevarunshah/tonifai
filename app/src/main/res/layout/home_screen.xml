@@ -32,8 +32,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/contactsInfo"
-        android:layout_below="@+id/sendContacts"
-        android:layout_alignLeft="@+id/sendContacts"
-        android:layout_alignStart="@+id/sendContacts" />
+        android:layout_below="@+id/fetchContacts"
+        android:layout_alignLeft="@+id/fetchContacts"
+        android:layout_alignStart="@+id/fetchContacts" />
 
 </RelativeLayout>

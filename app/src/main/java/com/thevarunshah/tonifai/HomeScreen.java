@@ -31,7 +31,7 @@ import java.util.Scanner;
 public class HomeScreen extends AppCompatActivity {
 
     ListView lv;
-    ArrayAdapter<Contact> aa;
+    CustomListAdapter cla;
     ArrayList<Contact> contacts = new ArrayList<Contact>();
 
     @Override
@@ -44,15 +44,16 @@ public class HomeScreen extends AppCompatActivity {
         setContentView(R.layout.home_screen);
 
         lv = (ListView) findViewById(R.id.contactsInfo);
-        aa = new ArrayAdapter<Contact>(this, android.R.layout.simple_list_item_1, android.R.id.text1, contacts);
-        lv.setAdapter(aa);
+        readContacts();
+        cla = new CustomListAdapter(this, contacts);
+        lv.setAdapter(cla);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Contact c = contacts.get(position);
-                Toast.makeText(getApplicationContext(), c.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Message sent to " + c.getName(), Toast.LENGTH_SHORT).show();
 
                 Bitmap bitmap = c.getBitmap();
                 Uri bitmapUri;
@@ -65,6 +66,7 @@ public class HomeScreen extends AppCompatActivity {
             }
         });
 
+        /*
         Button fetch = (Button) findViewById(R.id.fetchContacts);
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +76,7 @@ public class HomeScreen extends AppCompatActivity {
                 aa.notifyDataSetChanged();
             }
         });
+        */
     }
 
     public void readContacts() {
@@ -81,7 +84,7 @@ public class HomeScreen extends AppCompatActivity {
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         String phone = "";
-        String image_uri = "";
+        String image_uri = null;
         Bitmap bitmap = null;
 
         if (cur.getCount() > 0) {
@@ -112,6 +115,9 @@ public class HomeScreen extends AppCompatActivity {
                     Contact c = new Contact(name, phone, bitmap);
                     contacts.add(c);
                 }
+
+                image_uri = null;
+                bitmap = null;
             }
         }
     }
@@ -131,7 +137,8 @@ public class HomeScreen extends AppCompatActivity {
 
         try{
 
-            url = new URL("http://2c7cfed2.ngrok.com/initiate");
+            //url = new URL("http://2c7cfed2.ngrok.com/initiate");
+            url = new URL("http://jayravaliya.com:5000/initiate");
             String param;
             if(uri == null){
                 param = "number=" + URLEncoder.encode(number,"UTF-8") + "&image=" + URLEncoder.encode("","UTF-8");
@@ -139,7 +146,8 @@ public class HomeScreen extends AppCompatActivity {
             else {
                 InputStream iStream = getContentResolver().openInputStream(uri);
                 byte[] inputData = getBytes(iStream);
-                param = "number=" + URLEncoder.encode(number, "UTF-8") + "&image=" + Base64.encodeToString(inputData, Base64.DEFAULT);
+                String encoded = Base64.encodeToString(inputData, Base64.DEFAULT);
+                param = "number=" + URLEncoder.encode(number, "UTF-8") + "&image=" + encoded;
             }
 
             conn = (HttpURLConnection)url.openConnection();
